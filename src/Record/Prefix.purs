@@ -1,4 +1,4 @@
-module Record.Prefix where
+module Record.Prefix (PrefixProps, addPrefix) where
 
 import Prelude
 
