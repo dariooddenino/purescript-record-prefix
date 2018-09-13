@@ -1,0 +1,23 @@
+{
+  "name": "purescript-record-prefix",
+  "license": "MIT",
+  "repository": {
+    "type": "git",	
+    "url": "git://github.com/dariooddenino/purescript-record-prefix.git"   
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-prelude": "^4.1.0",
+    "purescript-console": "^4.1.0",
+    "purescript-heterogeneous": "^0.2.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0",
+    "purescript-assert": "^4.0.0"
+  }
+}

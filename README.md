@@ -1,0 +1,14 @@
+# Purescript-Record-Prefix
+
+A library to add prefixes to records' fields.
+
+## Example
+
+```purs
+foo :: { bar :: Int, baz :: Boolean }
+foo = { bar: 1, baz: true }
+
+
+bar :: { prebar :: Int, prebaz :: Boolean }
+bar = addPrefix (SProxy :: SProxy "pre") foo
+```
