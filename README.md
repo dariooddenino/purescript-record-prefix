@@ -1,6 +1,6 @@
 # Purescript-Record-Prefix
 
-A library to add prefixes to records' fields.
+A library to add prefixes to records' labels.
 
 ## Example
 
