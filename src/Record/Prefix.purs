@@ -1,4 +1,4 @@
-module Record.Prefix (PrefixProps, addPrefix, UnPrefixProps, removePrefix) where
+module Record.Prefix (PrefixProps, add, UnPrefixProps, remove) where
 
 import Prelude
 
@@ -28,13 +28,13 @@ instance prefixProps ::
     (_ >>> Builder.insert (SProxy :: SProxy newsym) a) rin
 
 -- | Adds a common prefix to a Record's labels.
-addPrefix ::
+add ::
   forall rin rout pre.
   HFoldlWithIndex (PrefixProps pre) (Builder {} {}) { | rin } (Builder {} { | rout }) =>
   SProxy pre ->
   { | rin } ->
   { | rout }
-addPrefix pre = flip Builder.build {} <<< hfoldlWithIndex (PrefixProps pre) identity
+add pre = flip Builder.build {} <<< hfoldlWithIndex (PrefixProps pre) identity
 
 data UnPrefixProps sym = UnPrefixProps (SProxy sym)
 
@@ -55,10 +55,10 @@ instance unprefixProps ::
     (_ >>> Builder.insert (SProxy :: SProxy newsym) a) rin
 
 -- | Removes a common prefix from a Record's labels.
-removePrefix ::
+remove ::
   forall rin rout pre.
   HFoldlWithIndex (UnPrefixProps pre) (Builder {} {}) { | rin } (Builder {} { | rout }) =>
   SProxy pre ->
   { | rin } ->
   { | rout }
-removePrefix pre = flip Builder.build {} <<< hfoldlWithIndex (UnPrefixProps pre) identity
+remove pre = flip Builder.build {} <<< hfoldlWithIndex (UnPrefixProps pre) identity

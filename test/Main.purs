@@ -3,7 +3,7 @@ module Test.Main where
 import Prelude
 import Effect (Effect)
 import Test.Assert (assert)
-import Record.Prefix (addPrefix, removePrefix)
+import Record.Prefix as Prefix
 import Type.Prelude (SProxy(..))
 
 foo :: { bar :: Int, baz :: Boolean }
@@ -17,6 +17,6 @@ pre = SProxy
 
 main :: Effect Unit
 main = do
-  assert $ addPrefix pre foo == prefoo
-  assert $ removePrefix pre prefoo == foo
-  assert $ foo == (removePrefix pre $ addPrefix pre foo)
+  assert $ Prefix.add pre foo == prefoo
+  assert $ Prefix.remove pre prefoo == foo
+  assert $ foo == (Prefix.remove pre $ Prefix.add pre foo)

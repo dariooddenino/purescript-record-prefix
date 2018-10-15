@@ -8,10 +8,9 @@ A library to add prefixes to records' labels.
 foo :: { bar :: Int, baz :: Boolean }
 foo = { bar: 1, baz: true }
 
-
 bar :: { prebar :: Int, prebaz :: Boolean }
-bar = addPrefix (SProxy :: SProxy "pre") foo
+bar = add (SProxy :: SProxy "pre") foo
 
 baz :: { bar :: Int, baz :: Boolean }
-baz = removePrefix (SProxy :: SProxy "pre") bar
+baz = remove (SProxy :: SProxy "pre") bar
 ```
