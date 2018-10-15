@@ -11,4 +11,7 @@ foo = { bar: 1, baz: true }
 
 bar :: { prebar :: Int, prebaz :: Boolean }
 bar = addPrefix (SProxy :: SProxy "pre") foo
+
+baz :: { bar :: Int, baz :: Boolean }
+baz = removePrefix (SProxy :: SProxy "pre") bar
 ```
