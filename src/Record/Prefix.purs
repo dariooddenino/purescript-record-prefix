@@ -34,7 +34,7 @@ add ::
   SProxy pre ->
   { | rin } ->
   { | rout }
-add pre = flip Builder.build {} <<< hfoldlWithIndex (PrefixProps pre) identity
+add pre = flip Builder.build {} <<< hfoldlWithIndex (PrefixProps pre) (identity ∷ Builder {} {})
 
 data UnPrefixProps sym = UnPrefixProps (SProxy sym)
 
@@ -61,4 +61,4 @@ remove ::
   SProxy pre ->
   { | rin } ->
   { | rout }
-remove pre = flip Builder.build {} <<< hfoldlWithIndex (UnPrefixProps pre) identity
+remove pre = flip Builder.build {} <<< hfoldlWithIndex (UnPrefixProps pre) (identity ∷ Builder {} {})
