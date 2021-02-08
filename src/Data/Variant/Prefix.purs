@@ -47,11 +47,6 @@ remove ::
   Variant rout
 remove p = hfoldlWithIndex (UnprefixCases :: UnprefixCases pre) unit
 
-test ::
-  forall t27.
-  Variant
-    ( bar :: Int
-    | t27
-    )
-test = remove (SProxy ∷ SProxy "foo") (inj (SProxy ∷ SProxy "foobar") 8 ∷ Variant ( foobar ∷ Int ))
-
+-- | We need an anotation of the intermediate result
+-- test = remove (SProxy ∷ SProxy "b") (remove (SProxy ∷ SProxy "foo") (inj (SProxy ∷ SProxy "foobar") 8 ∷ Variant ( foobar ∷ Int )))
+test = remove (SProxy ∷ SProxy "b") (remove (SProxy ∷ SProxy "foo") (inj (SProxy ∷ SProxy "foobar") 8 ∷ Variant ( foobar ∷ Int )) ∷ (Variant ( bar ∷ Int )))
