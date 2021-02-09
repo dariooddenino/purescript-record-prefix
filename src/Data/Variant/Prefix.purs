@@ -5,7 +5,7 @@ import Data.Variant (Variant, inj)
 import Data.Variant (inj) as Variant
 import Heterogeneous.Folding (class FoldingWithIndex, class HFoldlWithIndex, hfoldlWithIndex)
 import Prim.Row (class Cons) as Row
-import Prim.RowList (Cons, Nil) as RowList
+import Prim.RowList (Cons) as RowList
 import Prim.Symbol (class Append) as Symbol
 import Type.Eval (class Eval, kind TypeExpr)
 import Type.Eval.Foldable (FoldrWithIndex)
@@ -53,10 +53,14 @@ instance unprefixCases ::
   FoldingWithIndex (UnprefixCases s result) (SProxy l) Unit a (Variant result) where
   foldingWithIndex _ prop _ a = Variant.inj (SProxy :: SProxy l') a
 
+-- | Evaluation of this `TypeExpr` gives as back a `RowList.Nil`
+type NilExpr
+  = FromRow (RProxy ())
+
 add ::
   forall rin rout pre.
   IsSymbol pre =>
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) (FromRow (RProxy ())) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
+  Eval (((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
   HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
@@ -65,7 +69,7 @@ add p = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
 
 remove ::
   forall pre rin rout.
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) (FromRow (RProxy ())) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
+  Eval (((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
   HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
