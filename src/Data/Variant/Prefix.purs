@@ -13,10 +13,6 @@ import Type.Eval.Function (type (<<<))
 import Type.Eval.RowList (FromRow, ToRow)
 import Type.Prelude (class IsSymbol, RLProxy, RProxy, SProxy(..))
 
-foreign import data RowFoldBase :: TypeExpr
-
-instance evalRowFoldBase ∷ Eval RowFoldBase (RLProxy RowList.Nil)
-
 foreign import data PrefixStep :: Symbol -> Type -> Type -> TypeExpr -> TypeExpr
 
 instance evalPerfixStep ∷
@@ -60,7 +56,7 @@ instance unprefixCases ::
 add ::
   forall rin rout pre.
   IsSymbol pre =>
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) RowFoldBase <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
+  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) (FromRow (RProxy ())) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
   HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
@@ -69,7 +65,7 @@ add p = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
 
 remove ::
   forall pre rin rout.
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) RowFoldBase <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
+  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) (FromRow (RProxy ())) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
   HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
