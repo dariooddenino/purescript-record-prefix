@@ -15,14 +15,14 @@ import Type.Prelude (class IsSymbol, RLProxy, RProxy, SProxy(..))
 
 foreign import data PrefixStep :: Symbol -> Type -> Type -> TypeExpr -> TypeExpr
 
-instance evalPerfixStep ∷
+instance evalPerfixStep ::
   ( Symbol.Append prefix label label'
   , Eval tail (RLProxy tail')
   , IsSymbol label'
-  ) ⇒
+  ) =>
   Eval (PrefixStep prefix (SProxy label) value tail) (RLProxy (RowList.Cons label' value tail'))
 
-data PrefixCases (s :: Symbol) (result ∷ # Type)
+data PrefixCases (s :: Symbol) (result :: # Type)
   = PrefixCases
 
 instance prefixCases ::
@@ -35,14 +35,14 @@ instance prefixCases ::
 
 foreign import data UnprefixStep :: Symbol -> Type -> Type -> TypeExpr -> TypeExpr
 
-instance evalunprefixStep ∷
+instance evalunprefixStep ::
   ( Symbol.Append prefix label' label
   , Eval tail (RLProxy tail')
   , IsSymbol label'
-  ) ⇒
+  ) =>
   Eval (UnprefixStep prefix (SProxy label) value tail) (RLProxy (RowList.Cons label' value tail'))
 
-data UnprefixCases (s :: Symbol) (result ∷ # Type)
+data UnprefixCases (s :: Symbol) (result :: # Type)
   = UnprefixCases
 
 instance unprefixCases ::
@@ -60,7 +60,7 @@ type NilExpr
 add ::
   forall rin rout pre.
   IsSymbol pre =>
-  Eval (((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
+  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) (RProxy rin)) (RProxy rout) =>
   HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
@@ -69,7 +69,7 @@ add p = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
 
 remove ::
   forall pre rin rout.
-  Eval (((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr) <<< FromRow) (RProxy rin)) (RProxy rout) ⇒
+  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) (RProxy rin)) (RProxy rout) =>
   HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
