@@ -60,7 +60,7 @@ type NilExpr
 add ::
   forall rin rout pre.
   IsSymbol pre =>
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) (RProxy rin)) (RProxy rout) =>
+  Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) (RProxy rin)) (RProxy rout) =>
   HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
   SProxy pre ->
   Variant rin ->
@@ -79,5 +79,5 @@ remove p = hfoldlWithIndex (UnprefixCases :: UnprefixCases pre rout) unit
 -- | No annotation needed for intermediate result
 test = remove (SProxy :: SProxy "b") (remove (SProxy :: SProxy "foo") v)
   where
-  v :: Variant ( foobar :: Int )
+  v :: Variant ( foobar :: Int, foobk ∷ String )
   v = inj (SProxy :: SProxy "foobar") 8
