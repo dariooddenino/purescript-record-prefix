@@ -1,7 +1,7 @@
 module Data.Variant.Prefix where
 
 import Prelude
-import Data.Variant (Variant, inj)
+import Data.Variant (Variant)
 import Data.Variant (inj) as Variant
 import Heterogeneous.Folding (class FoldingWithIndex, class HFoldlWithIndex, hfoldlWithIndex)
 import Prim.Row (class Cons) as Row
@@ -18,6 +18,9 @@ import Type.Prelude (class IsSymbol, Proxy(..))
 -- | and `UnprefixStep` composition of functions like
 -- | `add` or `remove` requires type annotations
 -- | of the intermediate results.
+-- | This difference between `Variant` and `Record`
+-- | prefixing behavior is due to fact that
+-- | `Variant.inj` results in an "open row".
 foreign import data PrefixStep :: Symbol -> Symbol -> Type -> TypeExpr (RowList Type) -> TypeExpr (RowList Type)
 
 instance evalPerfixStep ::
