@@ -62,23 +62,23 @@ instance unprefixCases ::
   foldingWithIndex _ _ _ a = Variant.inj (Proxy :: Proxy l') a
 
 type NilExpr
-  = Lift (RowList.Nil ∷ RowList Type)
+  = Lift (RowList.Nil :: RowList Type)
 
-add ::
-  forall rin rout pre.
-  IsSymbol pre =>
-  Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) rin) rout =>
-  HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
-  Proxy pre ->
-  Variant rin ->
-  Variant rout
+add
+  :: forall rin rout pre
+   . IsSymbol pre
+  => Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) rin) rout
+  => HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout)
+  => Proxy pre
+  -> Variant rin
+  -> Variant rout
 add _ = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
 
-remove ::
-  forall pre rin rout.
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) rin) rout =>
-  HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout) =>
-  Proxy pre ->
-  Variant rin ->
-  Variant rout
+remove
+  :: forall pre rin rout
+   . Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) rin) rout
+  => HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout)
+  => Proxy pre
+  -> Variant rin
+  -> Variant rout
 remove _ = hfoldlWithIndex (UnprefixCases :: UnprefixCases pre rout) unit
