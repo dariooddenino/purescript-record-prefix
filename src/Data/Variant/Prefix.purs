@@ -5,24 +5,29 @@ import Data.Variant (Variant, inj)
 import Data.Variant (inj) as Variant
 import Heterogeneous.Folding (class FoldingWithIndex, class HFoldlWithIndex, hfoldlWithIndex)
 import Prim.Row (class Cons) as Row
-import Prim.RowList (Cons) as RowList
+import Prim.RowList (Cons, Nil) as RowList
+import Prim.RowList (RowList)
 import Prim.Symbol (class Append) as Symbol
-import Type.Eval (class Eval, kind TypeExpr)
+import Type.Eval (class Eval, Lift, TypeExpr)
 import Type.Eval.Foldable (FoldrWithIndex)
 import Type.Eval.Function (type (<<<))
 import Type.Eval.RowList (FromRow, ToRow)
-import Type.Prelude (class IsSymbol, RLProxy, RProxy, SProxy(..))
+import Type.Prelude (class IsSymbol, Proxy(..))
 
-foreign import data PrefixStep :: Symbol -> Type -> Type -> TypeExpr -> TypeExpr
+-- | Without type computations using `PrefixStep`
+-- | and `UnprefixStep` composition of functions like
+-- | `add` or `remove` requires type annotations
+-- | of the intermediate results.
+foreign import data PrefixStep :: Symbol -> Symbol -> Type -> TypeExpr (RowList Type) -> TypeExpr (RowList Type)
 
 instance evalPerfixStep ::
   ( Symbol.Append prefix label label'
-  , Eval tail (RLProxy tail')
+  , Eval tail tail'
   , IsSymbol label'
   ) =>
-  Eval (PrefixStep prefix (SProxy label) value tail) (RLProxy (RowList.Cons label' value tail'))
+  Eval (PrefixStep prefix label value tail) (RowList.Cons label' value tail')
 
-data PrefixCases (s :: Symbol) (result :: # Type)
+data PrefixCases (s :: Symbol) (result :: Row Type)
   = PrefixCases
 
 instance prefixCases ::
@@ -30,19 +35,19 @@ instance prefixCases ::
   , IsSymbol l'
   , Row.Cons l' a result_ result
   ) =>
-  FoldingWithIndex (PrefixCases s result) (SProxy l) Unit a (Variant result) where
-  foldingWithIndex _ prop _ a = Variant.inj (SProxy :: SProxy l') a
+  FoldingWithIndex (PrefixCases s result) (Proxy l) Unit a (Variant result) where
+  foldingWithIndex _ _ _ a = Variant.inj (Proxy :: Proxy l') a
 
-foreign import data UnprefixStep :: Symbol -> Type -> Type -> TypeExpr -> TypeExpr
+foreign import data UnprefixStep :: Symbol -> Symbol -> Type -> TypeExpr (RowList Type) -> TypeExpr (RowList Type)
 
-instance evalunprefixStep ::
+instance evalUnprefixStep ::
   ( Symbol.Append prefix label' label
-  , Eval tail (RLProxy tail')
+  , Eval tail tail'
   , IsSymbol label'
   ) =>
-  Eval (UnprefixStep prefix (SProxy label) value tail) (RLProxy (RowList.Cons label' value tail'))
+  Eval (UnprefixStep prefix label value tail) (RowList.Cons label' value tail')
 
-data UnprefixCases (s :: Symbol) (result :: # Type)
+data UnprefixCases (s :: Symbol) (result :: Row Type)
   = UnprefixCases
 
 instance unprefixCases ::
@@ -50,34 +55,27 @@ instance unprefixCases ::
   , IsSymbol l'
   , Row.Cons l' a result_ result
   ) =>
-  FoldingWithIndex (UnprefixCases s result) (SProxy l) Unit a (Variant result) where
-  foldingWithIndex _ prop _ a = Variant.inj (SProxy :: SProxy l') a
+  FoldingWithIndex (UnprefixCases s result) (Proxy l) Unit a (Variant result) where
+  foldingWithIndex _ _ _ a = Variant.inj (Proxy :: Proxy l') a
 
--- | Evaluation of this `TypeExpr` gives as back a `RowList.Nil`
 type NilExpr
-  = FromRow (RProxy ())
+  = Lift (RowList.Nil ∷ RowList Type)
 
 add ::
   forall rin rout pre.
   IsSymbol pre =>
-  Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) (RProxy rin)) (RProxy rout) =>
+  Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) rin) rout =>
   HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
-  SProxy pre ->
+  Proxy pre ->
   Variant rin ->
   Variant rout
-add p = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
+add _ = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
 
 remove ::
   forall pre rin rout.
-  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) (RProxy rin)) (RProxy rout) =>
+  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) rin) rout =>
   HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout) =>
-  SProxy pre ->
+  Proxy pre ->
   Variant rin ->
   Variant rout
-remove p = hfoldlWithIndex (UnprefixCases :: UnprefixCases pre rout) unit
-
--- | No annotation needed for intermediate result
-test = remove (SProxy :: SProxy "b") (remove (SProxy :: SProxy "foo") v)
-  where
-  v :: Variant ( foobar :: Int, foobk ∷ String )
-  v = inj (SProxy :: SProxy "foobar") 8
+remove _ = hfoldlWithIndex (UnprefixCases :: UnprefixCases pre rout) unit
