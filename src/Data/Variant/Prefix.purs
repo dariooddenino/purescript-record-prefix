@@ -19,7 +19,7 @@ import Type.Prelude (class IsSymbol, Proxy(..))
 -- | `add` or `remove` requires type annotations
 -- | of the intermediate results.
 -- | This difference between `Variant` and `Record`
--- | prefixing behavior is due to fact that
+-- | prefixing behavior is due to the fact that
 -- | `Variant.inj` results in an "open row".
 foreign import data PrefixStep :: Symbol -> Symbol -> Type -> TypeExpr (RowList Type) -> TypeExpr (RowList Type)
 
@@ -64,21 +64,21 @@ instance unprefixCases ::
 type NilExpr
   = Lift (RowList.Nil :: RowList Type)
 
-add
-  :: forall rin rout pre
-   . IsSymbol pre
-  => Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) rin) rout
-  => HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout)
-  => Proxy pre
-  -> Variant rin
-  -> Variant rout
+add ::
+  forall rin rout pre.
+  IsSymbol pre =>
+  Eval ((ToRow <<< FoldrWithIndex (PrefixStep pre) NilExpr <<< FromRow) rin) rout =>
+  HFoldlWithIndex (PrefixCases pre rout) Unit (Variant rin) (Variant rout) =>
+  Proxy pre ->
+  Variant rin ->
+  Variant rout
 add _ = hfoldlWithIndex (PrefixCases :: PrefixCases pre rout) unit
 
-remove
-  :: forall pre rin rout
-   . Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) rin) rout
-  => HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout)
-  => Proxy pre
-  -> Variant rin
-  -> Variant rout
+remove ::
+  forall pre rin rout.
+  Eval ((ToRow <<< FoldrWithIndex (UnprefixStep pre) NilExpr <<< FromRow) rin) rout =>
+  HFoldlWithIndex (UnprefixCases pre rout) Unit (Variant rin) (Variant rout) =>
+  Proxy pre ->
+  Variant rin ->
+  Variant rout
 remove _ = hfoldlWithIndex (UnprefixCases :: UnprefixCases pre rout) unit
