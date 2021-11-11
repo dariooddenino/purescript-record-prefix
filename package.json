@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "devDependencies": {
+    "pulp": "^15.0.0",
+    "purescript": "^0.14.4",
+    "purs-tidy": "^0.4.6"
+  },
+  "scripts": {
+    "build": "pulp build -- --censor-lib --strict",
+    "test": "pulp test",
+    "format": "purs-tidy format-in-place src test",
+    "check": "purs-tidy check src test",
+    "ide": "purs ide server"
+  }
+}
