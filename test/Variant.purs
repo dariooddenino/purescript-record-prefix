@@ -9,18 +9,18 @@ import Test.Assert (assert)
 import Type.Prelude (Proxy(..))
 
 foo :: Variant (bar :: Int, baz :: Boolean)
-foo = inj (Proxy ∷ Proxy "bar") 1
+foo = inj (Proxy :: Proxy "bar") 1
 
 prefoo :: Variant (prebar :: Int, prebaz :: Boolean)
-prefoo = inj (Proxy ∷ Proxy "prebar") 1
+prefoo = inj (Proxy :: Proxy "prebar") 1
 
-pr ∷ Proxy "pr"
+pr :: Proxy "pr"
 pr = Proxy
 
-e ∷ Proxy "e"
+e :: Proxy "e"
 e = Proxy
 
-suite ∷ Effect Unit
+suite :: Effect Unit
 suite = do
   assert $ Prefix.add pr (Prefix.add e foo) == prefoo
   assert $ Prefix.remove e (Prefix.remove pr prefoo) == foo

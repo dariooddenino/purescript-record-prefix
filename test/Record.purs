@@ -12,10 +12,10 @@ foo = { bar: 1, baz: true }
 prefoo :: { prebar :: Int, prebaz :: Boolean }
 prefoo = { prebar: 1, prebaz: true }
 
-pr ∷ Proxy "pr"
+pr :: Proxy "pr"
 pr = Proxy
 
-e ∷ Proxy "e"
+e :: Proxy "e"
 e = Proxy
 
 suite :: Effect Unit

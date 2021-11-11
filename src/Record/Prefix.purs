@@ -28,13 +28,13 @@ instance prefixProps ::
     (_ >>> Builder.insert (Proxy :: Proxy newsym) a) rin
 
 -- | Adds a common prefix to a Record's labels.
-add ::
-  forall rin rout pre.
-  HFoldlWithIndex (PrefixProps pre) (Builder {} {}) { | rin } (Builder {} { | rout }) =>
-  Proxy pre ->
-  { | rin } ->
-  { | rout }
-add pre = flip Builder.build {} <<< hfoldlWithIndex (PrefixProps pre) (identity ∷ Builder {} {})
+add
+  :: forall rin rout pre
+   . HFoldlWithIndex (PrefixProps pre) (Builder {} {}) { | rin } (Builder {} { | rout })
+  => Proxy pre
+  -> { | rin }
+  -> { | rout }
+add pre = flip Builder.build {} <<< hfoldlWithIndex (PrefixProps pre) (identity :: Builder {} {})
 
 data UnPrefixProps sym = UnPrefixProps (Proxy sym)
 
@@ -55,10 +55,10 @@ instance unprefixProps ::
     (_ >>> Builder.insert (Proxy :: Proxy newsym) a) rin
 
 -- | Removes a common prefix from a Record's labels.
-remove ::
-  forall rin rout pre.
-  HFoldlWithIndex (UnPrefixProps pre) (Builder {} {}) { | rin } (Builder {} { | rout }) =>
-  Proxy pre ->
-  { | rin } ->
-  { | rout }
-remove pre = flip Builder.build {} <<< hfoldlWithIndex (UnPrefixProps pre) (identity ∷ Builder {} {})
+remove
+  :: forall rin rout pre
+   . HFoldlWithIndex (UnPrefixProps pre) (Builder {} {}) { | rin } (Builder {} { | rout })
+  => Proxy pre
+  -> { | rin }
+  -> { | rout }
+remove pre = flip Builder.build {} <<< hfoldlWithIndex (UnPrefixProps pre) (identity :: Builder {} {})
